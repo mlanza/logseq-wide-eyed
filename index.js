@@ -27,28 +27,6 @@ function refreshStyle(blocks){
   model.toggle(null);
 }
 
-/* Logseq would be better served to relay `on("page:blocks:loaded")` and `on("journals:loaded")` events.
-   The data is being loaded and rendered by the app.  Why not announce it to interested listeners?
-*/
-function getBlocks(){
-  let tries = 0;
-  return new Promise(async function(resolve, reject){
-    const iid = setInterval(async function(){
-      const [blocks, pages] = await Promise.all([logseq.Editor.getCurrentPageBlocksTree(), getJournals()]);
-      const contents = [].concat(blocks || []).concat(pages || []);
-      if (contents.length) {
-        resolve(contents);
-        clearInterval(iid);
-      }
-      if (tries > 30){
-        resolve([]);
-        clearInterval(iid);
-      }
-      tries++
-    }, 500);
-  })
-}
-
 function createModel(){
   return {
     hover(){
@@ -116,16 +94,10 @@ async function main () {
       text-decoration: underline;
     }`);
 
-  /* `onRouteChanged` is great for reacting to changing routes, but why not trigger this on the initial app load and on a refresh?
-     Without some hook, there is no way to know when the data has been posted and is available to the likes of `getCurrentPageBlocksTree`.  It seems wasteful to rely on `setInterval` polling to determine this.
-     As both pages and journal entries are top-level primitives why shouldn't both be supported equally? That is, I can get page blocks loaded to the main UI (e.g. `getCurrentPageBlocksTree`) but what about `getCurrentPageJournals` or `onJournalsLoaded`?
-  */
   logseq.App.onRouteChanged(async function(e){
-    const blocks = e.path == "/all-journals" ? getJournals() : logseq.Editor.getCurrentPageBlocksTree();
+    const blocks = ["/all-journals", "/"].includes(e.path) ? getJournals() : logseq.Editor.getCurrentPageBlocksTree();
     refreshStyle(await blocks);
   });
-
-  refreshStyle(await getBlocks());
 }
 
 const model = createModel();
