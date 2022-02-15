@@ -16,7 +16,7 @@
   "logseq": {
     "id": "wide-eyed",
     "title": "Logseq Wide Eyed Plugin",
-    "icon": "./wide-eyed.svg"
+    "icon": "wide-eyed.svg"
   },
   "dependencies": {
     "@logseq/libs": "^0.0.1-alpha.29"
