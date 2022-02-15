@@ -22,6 +22,25 @@ async function getJournals(){
   return logseq.DB.q("(between -90d today)");
 }
 
+function getBlocks(path){
+  async function load(resolve, reject, tries){
+    const blocks = await (["/all-journals", "/"].includes(path) ? getJournals() : logseq.Editor.getCurrentPageBlocksTree());
+    if (blocks && blocks.length) {
+      resolve(blocks);
+    } else if (tries > 0){
+      setTimeout(function(){
+        load(resolve, reject, tries - 1);
+      }, 500);
+    } else {
+      resolve([]);
+    }
+  }
+
+  return new Promise(async function(resolve, reject){
+    load(resolve, reject, 20);
+  });
+}
+
 function refreshStyle(blocks){
   state.ids = blocks ? getIds(blocks) : [];
   model.toggle(null);
@@ -95,8 +114,7 @@ async function main () {
     }`);
 
   logseq.App.onRouteChanged(async function(e){
-    const blocks = ["/all-journals", "/"].includes(e.path) ? getJournals() : logseq.Editor.getCurrentPageBlocksTree();
-    refreshStyle(await blocks);
+    refreshStyle(await getBlocks(e.path));
   });
 }
 
