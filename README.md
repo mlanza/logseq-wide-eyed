@@ -28,10 +28,13 @@ Hopefully, when the plugin api evolves, future improvements can be made.  If you
 
 There were workarounds I could have employed but I didn't want the plugin doing too much under the hood.
 
-## Running the Sample
-* `yarn && yarn build` in terminal to install dependencies.
-* `Load unpacked plugin` in Logseq Desktop client.
+## Manual installation
+* Download this repo
+* In Logseq:
+  * Ensure Developer Mode is on
+  * Open Plugins
+  * Select `Load unpacked plugin`
 
 ### License
-MIT
+[MIT](./LICENSE.md)
 
