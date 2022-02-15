@@ -5,14 +5,22 @@
   "main": "index.html",
   "description": "Toggles the appearance and/or visibility of select blocks",
   "license": "MIT",
-  "devDependencies": {
-    "@logseq/libs": "^0.0.1-alpha.29"
-  },
   "browserslist": [
     "chrome 80"
   ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build --no-source-maps index.html --public-url ./"
+  },
   "logseq": {
     "id": "wide-eyed",
+    "title": "Logseq Wide Eyed Plugin",
     "icon": "./wide-eyed.svg"
-  }
+  },
+  "dependencies": {
+    "@logseq/libs": "^0.0.1-alpha.29"
+  },
+  "devDependencies": {
+    "@logseq/libs": "^0.0.1-alpha.29"
+  },
 }
