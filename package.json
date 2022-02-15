@@ -12,6 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "parcel build --no-source-maps index.html --public-url ./"
   },
+  "repo": "mlanza/logseq-wide-eyed",
   "logseq": {
     "id": "wide-eyed",
     "title": "Logseq Wide Eyed Plugin",
@@ -23,4 +24,5 @@
   "devDependencies": {
     "@logseq/libs": "^0.0.1-alpha.29"
   },
+  "effect": false
 }
