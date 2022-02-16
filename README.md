@@ -14,7 +14,7 @@ The out-of-the-box behavior targets completed/canceled to-dos.  Therefore, to tr
 * `opened` — stylesheet rules applied against matched blocks when the eye is opened
 * `closed` — stylesheet rules applied against matched blocks when the eye is closed
 
-## Design Notes & SDK Limitations
+## Design Notes
 If the plugin was designed with the static purpose of toggling TODO visibility some of the implementation details might have differed, but configurability was prioritized.
 
 Unfortunately, the Logseq SDK lacks the features I required for improving some of the implementation details.  Or, at least, I am not aware of them.
