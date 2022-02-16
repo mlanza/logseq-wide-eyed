@@ -2,7 +2,7 @@
   "name": "logseq-wide-eyed",
   "version": "1.0.2",
   "author": "Mario T. Lanza",
-  "main": "index.js",
+  "main": "index.html",
   "description": "Toggles the appearance and/or visibility of select blocks",
   "license": "MIT",
   "browserslist": [
