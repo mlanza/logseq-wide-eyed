@@ -17,7 +17,7 @@ The out-of-the-box behavior targets completed/canceled to-dos.  Therefore, to tr
 ## Design Notes
 If the plugin was designed with the static purpose of toggling TODO visibility some of the implementation details might have differed, but configurability was prioritized.
 
-Unfortunately, the Logseq SDK lacks the features I required for improving some of the implementation details.  Or, at least, I am not aware of them.
+Unfortunately, the Logseq SDK lacks [the features I required](https://discuss.logseq.com/t/add-more-event-hooks-for-plugins/5508) for improving some of the implementation details.  Or, at least, I am not aware of them.
 
 For example:
 * When the Journal page loads, to mimimize the overhead of the query it only affects matching blocks appearing on entries spanning the next 90 days.
