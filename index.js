@@ -2,7 +2,8 @@ const config = {};
 
 const state = {
   ids: [],
-  status: "closed"
+  status: "closed",
+  edits: []
 }
 
 function getIds(blocks, xs){
@@ -20,6 +21,26 @@ function getIds(blocks, xs){
 
 async function getJournals(){
   return logseq.DB.q("(between -90d today)");
+}
+
+function onPageChanges(refreshRate){
+  const callbacks = [];
+  setInterval(async function(){
+    state.edits.unshift(await logseq.Editor.getCurrentPage());
+    while (state.edits.length > 2) {
+      state.edits.pop();
+    }
+    const [current, prior] = state.edits;
+    if (current?.name === prior?.name && current?.updatedAt !== prior?.updatedAt) {
+      const path = `/page/${current.name}/`;
+      for(callback of callbacks){
+        callback(path);
+      }
+    }
+  }, refreshRate * 1000);
+  return function subscribe(callback){
+    callbacks.push(callback);
+  }
 }
 
 function getBlocks(path){
@@ -48,12 +69,6 @@ function refreshStyle(blocks){
 
 function createModel(){
   return {
-    hover(){
-      //TODO
-    },
-    leave(){
-      //TODO
-    },
     toggle(src) {
       if (src){
         state.status = state.status == "closed" ? "opened" : "closed";
@@ -69,11 +84,10 @@ function createModel(){
       const style = [closed, opened].join("\n ");
       const klass = ["button", state.status, state.ids.length ? "hits" : "empty"].join(" ");
 
-      /* Why should Logseq omit the data-on-mouseenter, data-on-mouseleave hooks? */
       logseq.App.registerUIItem('toolbar', {
         key: 'wide-eyed-toggle',
         template: `
-        <a id="eye" class="${klass}" data-on-click="toggle" data-on-mouseenter="hover" data-on-mouseleave="leave">
+        <a id="eye" class="${klass}" data-on-click="toggle">
           <i></i>
         </a>
         `,
@@ -88,11 +102,14 @@ function createModel(){
 
 async function main () {
   Object.assign(config, {
+    refreshRate: logseq.settings.refreshRate || 5,
     status: logseq.settings.status || "closed",
     match: new RegExp(logseq.settings.match || "(^DONE|^CANCELED) "),
     closed: logseq.settings.closed || "display: none;",
     opened: logseq.settings.opened || "text-decoration: underline wavy;"
   });
+
+  const onPageChanged = config.refreshRate > 0 ? onPageChanges(config.refreshRate) : function(){};
 
   state.status = config.status;
 
@@ -112,6 +129,10 @@ async function main () {
     #eye.hits i:before {
       text-decoration: underline;
     }`);
+
+  onPageChanged(async function(path){
+    refreshStyle(await getBlocks(path));
+  });
 
   logseq.App.onRouteChanged(async function(e){
     refreshStyle(await getBlocks(e.path));
