@@ -13,6 +13,13 @@ If any matching content is found on the page the eye is underlined.
 * `closed` — stylesheet rules applied against matched blocks when the eye is closed
 * `refreshRate` — how often in seconds to check for changes to current page?  0 to disable
 
+## Default Settings
+* `status` — "closed"
+* `match` — "(^DONE|^CANCELED) "
+* `opened` — "text-decoration: underline wavy;"
+* `closed` — "display: none;"
+* `refreshRate` — 5
+
 ## Design Notes
 Had the plugin been designed with the static purpose of toggling TODO visibility some of the implementation details might have been improved, but configurability was the priority.
 
