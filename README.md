@@ -6,18 +6,20 @@ Toggling is controlled by the eye appearing in the toolbar.  It has opened and c
 
 If any matching content is found on the page the eye is underlined.
 
+The opened styling rules are in effect only while hovering over the page body.
+
 ## Configurable Settings
 * `status` — a preferred initial status of `opened` or `closed`
 * `match` — a regular expression string which matches against text content
-* `opened` — stylesheet rules applied against matched blocks when the eye is opened
 * `closed` — stylesheet rules applied against matched blocks when the eye is closed
+* `opened` — stylesheet rules applied against matched blocks when the eye is opened
 * `refreshRate` — how often in seconds to check for changes to current page?  0 to disable
 
 ## Default Settings
 * `status` — "closed"
 * `match` — "(^DONE|^CANCELED) "
-* `opened` — "text-decoration: underline wavy;"
 * `closed` — "display: none;"
+* `opened` — "text-decoration: underline wavy;"
 * `refreshRate` — 5
 
 ## Design Notes
