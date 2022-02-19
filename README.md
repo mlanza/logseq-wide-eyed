@@ -1,32 +1,22 @@
 # Logseq Wide Eyed Plugin
 
-Toggles the visibility of DONE and CANCELED to-dos.
+Toggles the visibility of completed and canceled to-dos.
 
-An eye—appearing in the toolbar—has opened and closed states which can be toggled by clicking it.  Its state determines the appearance of select blocks.  It is useful for showing/hiding content such as completed/canceled to-dos, but it can be configured for other purposes.
+Toggling is controlled by the eye appearing in the toolbar.  It has opened and closed states which determine the appearance of matching blocks.  This is useful for showing/hiding content such as completed/canceled to-dos, but it can be configured for other purposes.
 
-It will be underlined if there is any matching content on the page.
-
-The out-of-the-box behavior targets completed/canceled to-dos.  Therefore, to try it out, visit a page having such.
+If any matching content is found on the page the eye is underlined.
 
 ## Configurable Settings
 * `status` — a preferred initial status of `opened` or `closed`
 * `match` — a regular expression string which matches against text content
 * `opened` — stylesheet rules applied against matched blocks when the eye is opened
 * `closed` — stylesheet rules applied against matched blocks when the eye is closed
+* `refreshRate` — how often in seconds to check for changes to current page?  0 to disable
 
 ## Design Notes
-If the plugin was designed with the static purpose of toggling TODO visibility some of the implementation details might have differed, but configurability was prioritized.
+Had the plugin been designed with the static purpose of toggling TODO visibility some of the implementation details might have been improved, but configurability was the priority.
 
-Unfortunately, the Logseq SDK lacks [the features I required](https://discuss.logseq.com/t/add-more-event-hooks-for-plugins/5508) for improving some of the implementation details.  Or, at least, I am not aware of them.
-
-For example:
-* When the Journal page loads, to mimimize the overhead of the query it only affects matching blocks appearing on entries spanning the next 90 days.
-* When a normal page loads, the initial state of the blocks is taken into consideration.  Any updates made to the page will not be taken into account until you revisit or refresh the page.  This avoids the overhead of polling since the SDK provides no means of tapping into page change events.
-* The matching is not applied against linked references.  Again, it would be useful if the SDK provided event hooks for what gets loaded onto a page.
-
-Hopefully, when the plugin api evolves, future improvements can be made.  If you are involved in the Logseq core team, please consider the comments/questions in [index.js](./index.js).
-
-There were workarounds I could have employed but I didn't want the plugin doing too much under the hood.
+The Logseq Plugin api lacks [the features I required](https://discuss.logseq.com/t/add-more-event-hooks-for-plugins/5508) to be made aware of nested content (like linked references) and lazily loaded content (as on the endless journal page).  Thus, the journal page only matches entries spanning the next 90 days.  In the absence of such hooks, not all matches can be detected and handled.  It handles only the main body of pages.
 
 ## Manual installation
 * Download this repo
