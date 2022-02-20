@@ -23,6 +23,19 @@ async function getJournals(){
   return logseq.DB.q("(between -90d today)");
 }
 
+function getPage(){
+  const callbacks = [];
+  return new Promise(function(resolve, reject){
+    const iv = setInterval(async function(){
+      const page = await logseq.Editor.getCurrentPage();
+      if (page) {
+        clearInterval(iv);
+        resolve(page);
+      }
+    }, 500);
+  });
+}
+
 function onPageChanges(refreshRate){
   const callbacks = [];
   setInterval(async function(){
@@ -32,9 +45,8 @@ function onPageChanges(refreshRate){
     }
     const [current, prior] = state.edits;
     if (current?.name === prior?.name && current?.updatedAt !== prior?.updatedAt) {
-      const path = `/page/${current.name}/`;
       for(callback of callbacks){
-        callback(path);
+        callback(current);
       }
     }
   }, refreshRate * 1000);
@@ -43,9 +55,9 @@ function onPageChanges(refreshRate){
   }
 }
 
-function getBlocks(path){
+function getBlocks(){
   async function load(resolve, reject, tries){
-    const blocks = await (["/all-journals", "/"].includes(path) ? getJournals() : logseq.Editor.getCurrentPageBlocksTree());
+    const blocks = await logseq.Editor.getCurrentPageBlocksTree();
     if (blocks && blocks.length) {
       resolve(blocks);
     } else if (tries > 0){
@@ -56,7 +68,6 @@ function getBlocks(path){
       resolve([]);
     }
   }
-
   return new Promise(async function(resolve, reject){
     load(resolve, reject, 20);
   });
@@ -73,7 +84,6 @@ function createModel(){
       if (src){
         state.status = state.status == "closed" ? "opened" : "closed";
       }
-
       const closed = (state.ids.length ? state.ids.map(function(id){
         return `div[blockid="${id}"]`;
       }).join(", ") : "#wide-eyed") + " " + (state.status === "closed" ? `{${config.closed}}` : "{}");
@@ -83,9 +93,9 @@ function createModel(){
 
       const style = [closed, opened].join("\n ");
       const klass = ["button", state.status, state.ids.length ? "hits" : "empty"].join(" ");
-
+      console.log("style", style);
       logseq.App.registerUIItem('toolbar', {
-        key: 'wide-eyed-toggle',
+        key: 'toggle',
         template: `
         <a id="eye" class="${klass}" data-on-click="toggle">
           <i></i>
@@ -93,7 +103,7 @@ function createModel(){
         `,
       });
       logseq.provideStyle({
-        key: 'wide-eyed-selection',
+        key: 'selection',
         style
       });
     }
@@ -130,12 +140,20 @@ async function main () {
       text-decoration: underline;
     }`);
 
-  onPageChanged(async function(path){
-    refreshStyle(await getBlocks(path));
+  onPageChanged(async function(page){
+    refreshStyle(await (page ? getBlocks() : getJournals()));
   });
 
   logseq.App.onRouteChanged(async function(e){
-    refreshStyle(await getBlocks(e.path));
+    console.log("route changed", e.path);
+    if (["/all-journals", "/"].includes(e.path)) {
+      const blocks = await getJournals();
+    } else {
+      const page = await getPage();
+      const blocks = await logseq.Editor.getPageBlocksTree(page.name);
+      refreshStyle(blocks);
+    }
+
   });
 }
 
