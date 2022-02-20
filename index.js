@@ -24,13 +24,49 @@ async function getJournals(){
 }
 
 function getPage(){
-  const callbacks = [];
+  let tries = 20;
   return new Promise(function(resolve, reject){
     const iv = setInterval(async function(){
       const page = await logseq.Editor.getCurrentPage();
-      if (page) {
+      if (page || tries <= 0) {
         clearInterval(iv);
         resolve(page);
+      }
+      tries--;
+      if (tries < 0) {
+        clearInterval(iv);
+        reject(page);
+      }
+    }, 500);
+  });
+}
+
+async function getPageBlockRefs(name){
+  const blocks = await logseq.DB.datascriptQuery(`
+    [:find (pull ?block [*])
+    :where
+    [?block :block/page ?p]
+    [?block :block/refs ?ref-page]
+    [?ref-page :block/name "${name}"]]`);
+  return blocks ? blocks.flat().map(function(b){
+    return {...b, uuid: b.uuid.$uuid$}
+  }) : [];
+}
+
+function getPagesBlocksAndRefs(page){
+  let tries = 20;
+  return new Promise(function(resolve, reject){
+    const iv = setInterval(async function(){
+      const [pageBlocks, refBlocks] = [await logseq.Editor.getPageBlocksTree(page.name), await getPageBlockRefs(page.name)];
+      const blocks = (pageBlocks || []).concat(refBlocks || []);
+      if (blocks) {
+        clearInterval(iv);
+        resolve(blocks);
+      }
+      tries--;
+      if (tries < 0){
+        clearInterval(iv);
+        reject(page);
       }
     }, 500);
   });
@@ -55,24 +91,6 @@ function onPageChanges(refreshRate){
   }
 }
 
-function getBlocks(){
-  async function load(resolve, reject, tries){
-    const blocks = await logseq.Editor.getCurrentPageBlocksTree();
-    if (blocks && blocks.length) {
-      resolve(blocks);
-    } else if (tries > 0){
-      setTimeout(function(){
-        load(resolve, reject, tries - 1);
-      }, 500);
-    } else {
-      resolve([]);
-    }
-  }
-  return new Promise(async function(resolve, reject){
-    load(resolve, reject, 20);
-  });
-}
-
 function refreshStyle(blocks){
   state.ids = blocks ? getIds(blocks) : [];
   model.toggle(null);
@@ -93,7 +111,6 @@ function createModel(){
 
       const style = [closed, opened].join("\n ");
       const klass = ["button", state.status, state.ids.length ? "hits" : "empty"].join(" ");
-      console.log("style", style);
       logseq.App.registerUIItem('toolbar', {
         key: 'toggle',
         template: `
@@ -141,19 +158,17 @@ async function main () {
     }`);
 
   onPageChanged(async function(page){
-    refreshStyle(await (page ? getBlocks() : getJournals()));
+    refreshStyle(await (page ? getPagesBlocksAndRefs(page) : getJournals()));
   });
 
   logseq.App.onRouteChanged(async function(e){
-    console.log("route changed", e.path);
     if (["/all-journals", "/"].includes(e.path)) {
       const blocks = await getJournals();
     } else {
       const page = await getPage();
-      const blocks = await logseq.Editor.getPageBlocksTree(page.name);
+      const blocks = await getPagesBlocksAndRefs(page);
       refreshStyle(blocks);
     }
-
   });
 }
 
