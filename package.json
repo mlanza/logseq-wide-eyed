@@ -1,6 +1,6 @@
 {
   "name": "logseq-wide-eyed",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Mario T. Lanza",
   "main": "index.html",
   "description": "Toggles the appearance and/or visibility of select blocks",

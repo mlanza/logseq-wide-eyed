@@ -13,6 +13,7 @@ The opened styling rules are in effect only while hovering over the page body.
 * `match` — a regular expression string which matches against text content
 * `closed` — stylesheet rules applied against matched blocks when the eye is closed
 * `opened` — stylesheet rules applied against matched blocks when the eye is opened
+* `targets` — what contexts are evaluated?
 * `refreshRate` — how often in seconds to check for changes to current page?  0 to disable
 
 ## Default Settings
@@ -20,6 +21,7 @@ The opened styling rules are in effect only while hovering over the page body.
 * `match` — "(^DONE|^CANCELED) "
 * `closed` — "display: none;"
 * `opened` — "text-decoration: underline wavy;"
+* `targets` — ["journals", "page-body", "linked-refs"]
 * `refreshRate` — 5
 
 ## Design Notes

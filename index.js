@@ -20,7 +20,7 @@ function getIds(blocks, xs){
 }
 
 async function getJournals(){
-  return logseq.DB.q("(between -90d today)");
+  return config.targets.includes("journals") ? logseq.DB.q("(between -90d today)") : [];
 }
 
 function getPage(){
@@ -57,8 +57,11 @@ function getPagesBlocksAndRefs(page){
   let tries = 20;
   return new Promise(function(resolve, reject){
     const iv = setInterval(async function(){
-      const [pageBlocks, refBlocks] = [await logseq.Editor.getPageBlocksTree(page.name), await getPageBlockRefs(page.name)];
-      const blocks = (pageBlocks || []).concat(refBlocks || []);
+      const [pageBody, linkedRefs] = [
+        config.targets.includes("page-body") ? await logseq.Editor.getPageBlocksTree(page.name) : null,
+        config.targets.includes("linked-refs") ? await getPageBlockRefs(page.name) : null
+      ];
+      const blocks = (pageBody || []).concat(linkedRefs || []);
       if (blocks) {
         clearInterval(iv);
         resolve(blocks);
@@ -130,6 +133,7 @@ function createModel(){
 async function main () {
   Object.assign(config, {
     refreshRate: logseq.settings.refreshRate || 5,
+    targets: logseq.settings.targets || ["page-body", "linked-refs"],
     status: logseq.settings.status || "closed",
     match: new RegExp(logseq.settings.match || "(^DONE|^CANCELED) "),
     closed: logseq.settings.closed || "display: none;",
@@ -164,6 +168,7 @@ async function main () {
   logseq.App.onRouteChanged(async function(e){
     if (["/all-journals", "/"].includes(e.path)) {
       const blocks = await getJournals();
+      refreshStyle(blocks);
     } else {
       const page = await getPage();
       const blocks = await getPagesBlocksAndRefs(page);
