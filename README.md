@@ -8,7 +8,7 @@ If any matching content is found on the page or its linked references the eye is
 
 The opened styling rules are in effect only while hovering over the page body.
 
-[Style Carousel](https://github.com/mlanza/logseq-style-carousel) is more robust and, in many situations, more effective.
+[Style Carousel](https://github.com/mlanza/logseq-style-carousel) is more robust, has the same default behavior—toggling the visibility of completed and canceled to-dos—and is, in many situations, more effective.
 
 ## Configurable Settings
 * `status` — a preferred initial status of `opened` or `closed`
