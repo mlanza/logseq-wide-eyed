@@ -8,7 +8,7 @@ If any matching content is found on the page or its linked references the eye is
 
 The opened styling rules are in effect only while hovering over the page body.
 
-See the [Style Carousel Plugin](https://github.com/mlanza/logseq-style-carousel) as it is similar and may better suit your needs.  Read the Design Notes if you're not sure.
+[Style Carousel](https://github.com/mlanza/logseq-style-carousel) is more robust and, in many situations, more effective.
 
 ## Configurable Settings
 * `status` — a preferred initial status of `opened` or `closed`
@@ -27,11 +27,12 @@ See the [Style Carousel Plugin](https://github.com/mlanza/logseq-style-carousel)
 * `refreshRate` — 5
 
 ## Design Notes
-The primary difference between Wide Eyed and Style Carousel is the manner of content matching.  The former matches directly against block objects as they exist in browser memory while the latter matches against what gets rendered to the DOM.  Because Style Carousel relies purely on CSS selectors, it is simpler and quicker.  But it is also weaker in that it can only match against what can be detected in the DOM with CSS selectors.  In most situations this will be sufficient for your needs.
+The primary difference between Wide Eyed and [Style Carousel](https://github.com/mlanza/logseq-style-carousel) is the manner of content matching.
+Wide Eyed queries the page as it attempts to find matching blocks, but the main Logseq UI is multifaceted (e.g. Linked References, Unlinked References, embedded queries, some blocks lazily load) and Wide Eyed can neither anticipate nor easily see everything.  Since the Logseq Plugin api does not provide [sufficient hooks](https://discuss.logseq.com/t/add-more-event-hooks-subscriptions-for-plugins/5508) and [rendering events](https://discuss.logseq.com/t/add-plugin-rendering-pipeline/5549) the problem [cannot be easily overcome](https://github.com/mlanza/logseq-style-carousel/issues/1#issuecomment-1049810662).
 
-The block matching approach of Wide Eyed has the potential to be far more powerful than DOM matching, but since the Logseq Plugin api lacks [rendering events](https://discuss.logseq.com/t/add-plugin-rendering-pipeline/5549) it has to work unnecessarily hard to sychronize the UI with whatever blocks flow into a page.  And, in some cases, like the Journals page, certain blocks sneak lazily into the page.  Since Logseq keeps this information to itself, rather than sharing it, the plugin cannot react.  Please vote for [these](https://discuss.logseq.com/t/add-more-event-hooks-subscriptions-for-plugins/5508) [suggestions](https://discuss.logseq.com/t/add-plugin-rendering-pipeline/5549) if you'd like this to be improved.  With more hooks Wide Eyed could do everything Style Carousel does and more, but [without them it's just not possible](https://github.com/mlanza/logseq-style-carousel/issues/1#issuecomment-1049810662).
+Style Carousel does not attempt to discern what can be found on the page.  Rather it applies style rules to achieve similar effect.  Furthermore, it can optionally employ queries.  The difference is, when it does, it does not attempt to discern what can be found on the page, but rather builds style rules based on queries against the complete graph.  These style rules, while encompassing a wider scope, are effective in the context of any page.  In most cases, Style Carousel will get you better results.
 
-While both plugins by default toggle TODO visibility, it was never meant to be their sole purpose.  Rather it was meant to offer an example of what's possible.  The purpose is to allow you to configure buttons which conditionally find and style content in whatever manner you dream up.
+While both plugins by default toggle TODO visibility, it was never meant as their sole purpose.  Rather it was meant to offer an example of what's possible.  The purpose is to allow you to configure buttons which conditionally find and style content in whatever manner you dream up.
 
 ## Manual installation
 * Download this repo
