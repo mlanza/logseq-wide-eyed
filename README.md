@@ -6,6 +6,8 @@ Version 2 replaced the guts with the internals of [Style Carousel](https://githu
 
 This plugin may eventually be deprecated due to the existence of Style Carousel which has the same default behavior.  Furthermore, it can be customized to use the familiar Wide Eyed eye icon.
 
+Additionally, since Style Carousel and Wide Eyed are internally the same, do not install both.  It's one or the other.
+
 ## License
 [MIT](./LICENSE.md)
 
